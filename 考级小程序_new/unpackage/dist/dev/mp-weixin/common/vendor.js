@@ -8974,13 +8974,12 @@ var saveLifeData = function saveLifeData(key, value) {
 };
 var store = new _vuex.default.Store({
   state: {
-    // 如果上面从本地获取的lifeData对象下有对应的属性，就赋值给state中对应的变量
-    // 加上vuex_前缀，是防止变量名冲突，也让人一目了然
+    isFreshIng: false,
     vuex_user: lifeData.vuex_user ? lifeData.vuex_user : {},
     vuex_refresh: lifeData.vuex_refresh ? lifeData.vuex_refresh : '',
-    vuex_token: lifeData.vuex_token ? lifeData.vuex_token : ''
-    // 如果vuex_version无需保存到本地永久存储，无需lifeData.vuex_version方式
-  },
+    vuex_token: lifeData.vuex_token ? lifeData.vuex_token : '',
+    vuex_wxHasAuth: false },
+
   mutations: {
     $uStore: function $uStore(state, payload) {
       // 判断是否多层级调用，state中为对象存在的情况，诸如user.info.score = 1
@@ -11308,7 +11307,7 @@ throttle;exports.default = _default;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
 
 var _httpToken = _interopRequireDefault(__webpack_require__(/*! common/http/http.token.js */ 8));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} // 这里的vm，就是我们在vue文件里面的this，所以我们能在这里获取vuex的变量，比如存放在里面的token
 // 同时，我们也可以在此使用getApp().globalData，如果你把token放在getApp().globalData的话，也是可以使用的
@@ -11333,12 +11332,66 @@ var auth_header = 'Bearer ';var install = function install(Vue, vm) {
   };
   // 响应拦截，判断状态码是否通过
   Vue.prototype.$u.http.interceptor.response = function (res) {
-    return res;
+
+    if (vm.isFreshIng) {
+      return false;
+    } else {
+      var errorCodeList = ['token_not_valid', 'bad_authorization_header'];
+      if (res.data.code == 'user_not_found') {
+        _httpToken.default.get_token().then(function (res) {
+          var interVal = setInterval(function () {
+            if (vm.vuex_token != '') {
+              clearInterval(interVal);
+              vm.$u.api.getUserInfo().then(function (res) {
+                vm.$u.vuex('vuex_user',
+                res.data);
+                var lifeData = uni.getStorageSync('lifeData');
+                if (lifeData.vuex_lastUserRole != null) {
+                  vm.$u.vuex('vuex_userRole', lifeData.
+                  vuex_lastUserRole);
+                } else {
+                  if (res.data.deliveryerinfo.is_pass == false) {
+                    vm.$u.vuex('vuex_userRole', 0);
+                  } else {
+                    vm.$u.vuex('vuex_userRole', 1);
+                  }
+                }
+                if (vm.vuex_user.baseinfo != null) {
+                  vm.$u.vuex("vuex_hasLogin", true);
+                }
+              }).catch(function (err) {});
+            }
+          }, 300);
+        });
+      } else if (errorCodeList.indexOf(res.data.code) != -1) {
+        uni.showToast({
+          title: "登陆信息失效，请重试",
+          icon: 'none' });
+
+        vm.$u.vuex("isFreshIng", true);
+
+        _httpToken.default.refresh_token().then(function (res2) {
+          if (res2)
+          console.log(res2);
+        }).catch(function (res2) {
+          if (res.data.code == "token_not_valid") {
+            _httpToken.default.get_token().then(function (res3) {
+              vm.$u.vuex("isFreshIng", false);
+            });
+          }
+        });
+        return false;
+      } else {
+        return res;
+      }
+      return res;
+    }
   };
 
 };var _default =
 {
   install: install };exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
 /* 36 */
@@ -11353,7 +11406,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 // 微信逻辑登陆相关
 var getUserTokenUrl = 'token/miniprogram/';
 var verifyTokenUrl = 'token/verify/';
-var refreshTokenUrl = 'refresh/';
+var refreshTokenUrl = 'token/refresh/';
 //微信授权及用户注册相关
 var getUserWxInfoUrl = 'account/update_wechat_info_from_miniprogram/';
 var getUserInfoUrl = 'account/';

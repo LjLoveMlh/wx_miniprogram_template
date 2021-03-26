@@ -16,7 +16,6 @@
             getSystemInfoCus() {
                 uni.getSystemInfo({
                     success: function(e) {
-                        // console.log(e)
                         Vue.prototype.StatusBar = e.statusBarHeight;
                         let custom = wx.getMenuButtonBoundingClientRect();
                         Vue.prototype.Custom = custom;
@@ -59,10 +58,10 @@
                 })
 
                 that.$u.api.getUserInfo().then(res => {
-
-                    console.log(res)
-
-
+                    if (res.data.miniprogram.info !== null) {
+                        //微信已经授权
+                        that.$u.vuex('vuex_wxHasAuth', true)
+                    }
 
                 }).catch(err => {});
 

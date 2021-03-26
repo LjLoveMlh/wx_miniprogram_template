@@ -1,27 +1,44 @@
 <template>
     <view>
 
+        <view v-if="!vuex_wxHasAuth">
+            <view class="anthHelp padding padding-tb-xl flex flex-direction justify-center align-center bg-white">
+                <view class="margin-bottom flex flex-direction text-center">
+                    <text>为了更好地为您提供服务</text>
+                    <text>请授权</text>
+                </view>
+                <button type="primary" style="width: 80%;" open-type="getUserInfo"
+                    class="cu-btn bg-green lg u-reset-button" @getuserinfo="wxGetUserInfo">微信授权</button>
+            </view>
+        </view>
+        <view v-else>
 
-        <scroll-view scroll-y class="DrawerPage" :class="modalName=='viewModal'?'show':''">
-            <cu-custom bgColor="bg-white" :showLeftTitle="true">
-                <block slot="leftTitle">
-                    <view class="flex justify-center">
-                        <view @tap="showModal" data-target="viewModal">
-                            <view class="cu-avatar  round" :style="'background-image:url('+testData.userHeadImg+');'">
+
+            <scroll-view scroll-y class="DrawerPage" :class="modalName=='viewModal'?'show':''">
+                <cu-custom bgColor="bg-white" :showLeftTitle="true">
+                    <block slot="leftTitle">
+                        <view class="flex justify-center">
+                            <view @tap="showModal" data-target="viewModal">
+                                <view class="cu-avatar  round"
+                                    :style="'background-image:url('+testData.userHeadImg+');'">
+                                </view>
                             </view>
+                            <!-- <view class="margin-left-sm"> {{["学生","机构","考官"][1]}} </view> -->
+                            <view class="margin-left-sm">凌星天骄报名工具</view>
                         </view>
-                        <!-- <view class="margin-left-sm"> {{["学生","机构","考官"][1]}} </view> -->
-                        <view class="margin-left-sm">凌星天骄报名工具</view>
-                    </view>
-                </block>
-            </cu-custom>
-            <view class="lj-half-round bg-white round"></view>
+                    </block>
+                </cu-custom>
+                <view class="lj-half-round bg-white round"></view>
 
-            <!-- tab考级 -->
-            <!--  <block v-if="userActive">
+
+
+
+
+                <!-- tab考级 -->
+                <!--  <block v-if="userActive">
                 <commonTabNav ref="refreshThisData" />
             </block> -->
-            <!-- <block v-else>
+                <!-- <block v-else>
                 <view v-if="vuex_userRole!==0"
                     class="padding-xl text-center  margin  radius  text-purple  lj-in-shadow margin-top-xl">当前身份未激活
                     <view class="text-gray text-sm margin-top-sm" @tap="refreshMyAccout">
@@ -31,58 +48,56 @@
             </block> -->
 
 
-            <view class="padding flex flex-direction justify-center align-center">
-                <button type="primary" style="width: 80%;" open-type="getUserInfo"
-                    class="cu-btn bg-green lg u-reset-button" @getuserinfo="wxGetUserInfo">微信授权</button>
+
+
+
+            </scroll-view>
+
+
+            <!-- 左侧抽屉视图 -->
+            <view class="DrawerClose" :class="modalName=='viewModal'?'show':''" @tap="hideModal">
+                <text class="cuIcon-pullright"></text>
             </view>
-        </scroll-view>
+            <scroll-view scroll-y class="DrawerWindow" :class="modalName=='viewModal'?'show':''">
 
-
-        <!-- 左侧抽屉视图 -->
-        <view class="DrawerClose" :class="modalName=='viewModal'?'show':''" @tap="hideModal">
-            <text class="cuIcon-pullright"></text>
-        </view>
-        <scroll-view scroll-y class="DrawerWindow" :class="modalName=='viewModal'?'show':''">
-
-            <view class="cu-list menu card-menu margin-top-xl margin-bottom-xl shadow-lg">
-                <view class="cu-item">
-                    <view class="content flex flex-direction justify-center text-center padding">
-                        <view class="lj-self-center">
-                            <view class="cu-avatar xl round "
-                                :style="'background-image:url('+vuex_user.wechat.info.avatarUrl+');'"></view>
-                        </view>
-                        <view class="text-black text-bold text-lg margin-tb-sm">{{vuex_user.wechat.info.nickName}}
-                        </view>
-                        <view class="lj-self-center" v-if="vuex_userRole==1">
-                            <view class="cu-capsule radius">
-                                <view class='cu-tag bg-purple '>
-                                    机构
-                                </view>
-                                <view class="cu-tag line-purple">
-                                    {{vuex_user.org.is_active?'已激活':'未激活'}}
+                <view class="cu-list menu card-menu margin-top-xl margin-bottom-xl shadow-lg">
+                    <view class="cu-item">
+                        <view class="content flex flex-direction justify-center text-center padding">
+                            <view class="lj-self-center">
+                            </view>
+                            <view class="text-black text-bold text-lg margin-tb-sm">{{vuex_user.wechat.info.nickName}}
+                            </view>
+                            <view class="lj-self-center" v-if="vuex_userRole==1">
+                                <view class="cu-capsule radius">
+                                    <view class='cu-tag bg-purple '>
+                                        机构
+                                    </view>
+                                    <view class="cu-tag line-purple">
+                                        {{vuex_user.org.is_active?'已激活':'未激活'}}
+                                    </view>
                                 </view>
                             </view>
-                        </view>
-                        <view class="lj-self-center" v-if="vuex_userRole==2">
-                            <view class="cu-capsule radius">
-                                <view class='cu-tag bg-purple '>
-                                    考官
-                                </view>
-                                <view class="cu-tag line-purple">
-                                    {{vuex_user.examiner.is_active?'已激活':'未激活'}}
+                            <view class="lj-self-center" v-if="vuex_userRole==2">
+                                <view class="cu-capsule radius">
+                                    <view class='cu-tag bg-purple '>
+                                        考官
+                                    </view>
+                                    <view class="cu-tag line-purple">
+                                        {{vuex_user.examiner.is_active?'已激活':'未激活'}}
+                                    </view>
                                 </view>
                             </view>
-                        </view>
 
+                        </view>
                     </view>
                 </view>
-            </view>
 
 
-            <view class="closeBtnHelp">
-                <button class="cu-btn radius line-purple shadow" @tap="hideModal">关闭</button>
-            </view>
-        </scroll-view>
+                <view class="closeBtnHelp">
+                    <button class="cu-btn radius line-purple shadow" @tap="hideModal">关闭</button>
+                </view>
+            </scroll-view>
+        </view>
     </view>
 </template>
 
@@ -130,7 +145,6 @@
                         uni.getProvider({
                             service: 'oauth',
                             success: function(res3) {
-                                console.log(res3)
                                 if (res3.provider[0] === 'weixin') {
                                     //目的 提供服务器需要的加密字符串
                                     that.exchangeForWXinfo(tempDataServiceNeed);
@@ -153,6 +167,7 @@
                         uni.showToast({
                             title: "授权成功!"
                         })
+                        that.$u.vuex('vuex_wxHasAuth', true)
                     } else {
                         uni.showToast({
                             title: "授权异常!"
@@ -279,5 +294,13 @@
 
     .DrawerPage .cu-bar.tabbar .action {
         flex: initial;
+    }
+
+    .anthHelp {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
     }
 </style>

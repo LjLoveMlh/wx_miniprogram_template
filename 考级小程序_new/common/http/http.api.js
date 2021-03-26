@@ -2,7 +2,7 @@ const basePath = '/api/';
 // 微信逻辑登陆相关
 let getUserTokenUrl = 'token/miniprogram/';
 let verifyTokenUrl = 'token/verify/';
-let refreshTokenUrl = 'refresh/';
+let refreshTokenUrl = 'token/refresh/';
 //微信授权及用户注册相关
 let getUserWxInfoUrl = 'account/update_wechat_info_from_miniprogram/'
 let getUserInfoUrl = 'account/'

@@ -218,6 +218,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 var _default =
 {
   data: function data() {
@@ -260,7 +275,6 @@ var _default =
           uni.getProvider({
             service: 'oauth',
             success: function success(res3) {
-              console.log(res3);
               if (res3.provider[0] === 'weixin') {
                 //目的 提供服务器需要的加密字符串
                 that.exchangeForWXinfo(tempDataServiceNeed);
@@ -283,6 +297,7 @@ var _default =
           uni.showToast({
             title: "授权成功!" });
 
+          that.$u.vuex('vuex_wxHasAuth', true);
         } else {
           uni.showToast({
             title: "授权异常!" });

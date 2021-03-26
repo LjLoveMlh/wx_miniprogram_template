@@ -130,7 +130,6 @@ var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 2));function _i
     getSystemInfoCus: function getSystemInfoCus() {
       uni.getSystemInfo({
         success: function success(e) {
-          // console.log(e)
           _vue.default.prototype.StatusBar = e.statusBarHeight;
           var custom = wx.getMenuButtonBoundingClientRect();
           _vue.default.prototype.Custom = custom;
@@ -173,10 +172,10 @@ var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 2));function _i
 
 
       that.$u.api.getUserInfo().then(function (res) {
-
-        console.log(res);
-
-
+        if (res.data.miniprogram.info !== null) {
+          //微信已经授权
+          that.$u.vuex('vuex_wxHasAuth', true);
+        }
 
       }).catch(function (err) {});
 
